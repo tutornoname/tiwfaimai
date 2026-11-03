@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ติวไฟไหม้ · สุ่มทำโจทย์เพิ่ม</title>
+<meta name="description" content="สุ่มโจทย์ TGAT2 ความสามารถเชิงตัวเลขมาฝึกต่อจากชีทติวไฟไหม้">
+<meta name="theme-color" content="#0E6E78">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230E6E78'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'%3E%3F%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --bg: #F4F6F6; --surface: #FFFFFF; --surface-2: #F7FAFA;
+  --text: #1B2426; --muted: #55615F; --line: #D5DEDE; --line-soft: #E1E7E7;
+  --accent: #0E6E78; --accent-ink: #0E6E78; --accent-strong: #0A535A; --accent-soft: #E8F3F4; --on-accent: #FFFFFF;
+  --wrong: #A63A1C; --wrong-ink: #8A2F16; --wrong-soft: #FBECE7;
+  --late: #C2551F; --late-ink: #A8471A; --star-off: #C3CDCD; --fig-bg: #FFFFFF;
+  --font: 'Sarabun', 'Noto Sans Thai', 'Leelawadee UI', 'Thonburi', Tahoma, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0E1516; --surface: #162022; --surface-2: #1B2729;
+    --text: #E4ECEC; --muted: #A2B3B3; --line: #2E3F41; --line-soft: #243335;
+    --accent: #0E6E78; --accent-ink: #62C3CC; --accent-strong: #138893; --accent-soft: #173539; --on-accent: #FFFFFF;
+    --wrong: #E07D60; --wrong-ink: #F4A189; --wrong-soft: #3A2119;
+    --late: #E8834D; --late-ink: #F29B67; --star-off: #435759; --fig-bg: #FFFFFF;
+    color-scheme: dark;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+  background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--accent-ink); }
+:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.wrap { width: 100%; max-width: 1120px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
+@media (min-width: 900px) { .wrap { padding-left: 32px; padding-right: 32px; } }
+
+/* Header, strip, footer */
+.top { background: var(--surface); border-bottom: 1px solid var(--line-soft); padding-top: env(safe-area-inset-top, 0px); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; }
+.brand { font-size: 22px; font-weight: 700; color: var(--accent-ink); text-decoration: none; }
+.top-sub { font-size: 14px; color: var(--muted); text-align: right; }
+.strip { background: var(--surface); border-bottom: 1px solid var(--line-soft); }
+.strip[hidden] { display: none; }
+.strip .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding-top: 12px; padding-bottom: 12px; font-size: 15px; }
+.qnum { font-weight: 600; }
+.clock { display: flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+.clock-target { color: var(--muted); font-weight: 400; }
+.bar { flex: 1 1 100%; order: 3; height: 8px; border-radius: 4px; background: var(--line-soft); overflow: hidden; }
+.bar-fill { height: 100%; width: 0; border-radius: 4px; background: var(--accent); transition: width .25s linear; }
+.strip.late .bar-fill { background: var(--late); }
+.strip.late .clock { color: var(--late-ink); font-weight: 600; }
+@media (min-width: 900px) { .bar { flex: 1 1 240px; order: 0; } }
+main { flex: 1 0 auto; padding-top: 24px; padding-bottom: 40px; }
+.foot { border-top: 1px solid var(--line-soft); padding: 16px 0; text-align: center; font-size: 13px; color: var(--muted); }
+
+/* Shared pieces */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+h1, h2, p { margin: 0; }
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 56px; padding: 0 20px;
+  border-radius: 14px; border: 2px solid var(--accent); background: var(--accent); color: var(--on-accent);
+  font-size: 19px; font-weight: 700; text-decoration: none; text-align: center;
+}
+.btn:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btn-outline { background: var(--surface); color: var(--accent-ink); }
+.btn-outline:hover { background: var(--accent-soft); border-color: var(--accent); }
+.link-btn { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; font-size: 16px; text-decoration: none; background: none; border: 0; color: var(--accent-ink); padding: 0; }
+.stars { color: var(--accent-ink); letter-spacing: 1px; white-space: nowrap; }
+.stars .off { color: var(--star-off); }
+
+/* Picker */
+.intro { display: flex; flex-direction: column; gap: 6px; max-width: 640px; margin-bottom: 24px; }
+.intro h1 { font-size: 28px; line-height: 1.25; }
+@media (min-width: 900px) { .intro h1 { font-size: 40px; } .intro p { font-size: 18px; } main { padding-top: 48px; } }
+.topics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (min-width: 720px) { .topics { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; } }
+.topic {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-height: 112px; padding: 16px;
+  text-decoration: none; color: var(--text);
+}
+.topic:hover { border-color: var(--accent); }
+.topic .tcode { font-size: 14px; font-weight: 700; color: var(--accent-ink); }
+.topic .tname { font-size: 18px; font-weight: 600; line-height: 1.35; }
+.topic .tcount { margin-top: auto; font-size: 14px; color: var(--muted); }
+.topic.empty { opacity: .55; pointer-events: none; }
+@media (min-width: 900px) { .topic { min-height: 140px; padding: 24px; } .topic .tname { font-size: 22px; } }
+.note-bar { margin-top: 20px; font-size: 14px; color: var(--muted); }
+
+/* Setup */
+.setup { display: flex; flex-direction: column; gap: 16px; }
+.setup-grid { display: flex; flex-direction: column; gap: 16px; }
+@media (min-width: 900px) { .setup-grid { flex-direction: row; align-items: stretch; gap: 24px; } .setup-grid > :first-child { flex: 1 1 320px; } .setup-grid > :last-child { flex: 999 1 480px; min-width: 0; } }
+.topic-card { padding: 20px; display: flex; flex-direction: column; gap: 6px; }
+.topic-card h1 { font-size: 28px; line-height: 1.25; }
+@media (min-width: 900px) { .topic-card { padding: 32px; } .topic-card h1 { font-size: 40px; } }
+.form-card { padding: 20px; display: flex; flex-direction: column; gap: 24px; }
+@media (min-width: 900px) { .form-card { padding: 32px; } }
+fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+legend { font-size: 17px; font-weight: 600; padding: 0; margin-bottom: 10px; }
+.seg { display: grid; gap: 8px; }
+.seg-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.seg-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.seg button {
+  min-height: 52px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface);
+  font-size: 18px; font-weight: 600; color: var(--text); padding: 0 6px;
+}
+.seg button.star-btn { color: var(--accent-ink); letter-spacing: 1px; }
+.seg button[aria-pressed="true"] { background: var(--accent); border: 2px solid var(--accent); color: var(--on-accent); }
+.warn { font-size: 14px; color: var(--late-ink); }
+
+/* Question */
+.qgrid { display: flex; flex-direction: column; gap: 16px; }
+@media (min-width: 900px) {
+  .qgrid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); grid-template-areas: "card opts"; gap: 24px; align-items: start; }
+  .qgrid .qcard { grid-area: card; } .qgrid .opts { grid-area: opts; } .qgrid .fbwrap { grid-area: fb; }
+  .answered .qgrid { grid-template-areas: "card fb" "opts fb"; grid-template-rows: auto 1fr; }
+  .qgrid .opts { align-self: start; }
+}
+.qcard { padding: 18px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+@media (min-width: 900px) { .qcard { padding: 28px 32px; } }
+.qhead { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); }
+.qhead .stars { font-size: 17px; }
+.qtext { font-size: 19px; font-weight: 500; line-height: 1.55; overflow-wrap: anywhere; }
+@media (min-width: 900px) { .qtext { font-size: 23px; } .qhead .stars { font-size: 20px; } }
+.series-scroll { overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+.series { display: flex; gap: 8px; width: max-content; padding: 2px; }
+.term {
+  display: flex; align-items: center; justify-content: center; min-width: 48px; height: 52px; padding: 0 8px;
+  border: 1.5px solid var(--text); border-radius: 8px; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.term.q { border-style: dashed; border-color: var(--accent-ink); background: var(--accent-soft); color: var(--accent-ink); font-weight: 700; }
+.term.q.filled { border-style: solid; background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+@media (min-width: 900px) { .series { gap: 12px; } .term { min-width: 64px; height: 64px; font-size: 24px; } }
+.stmts { display: flex; flex-direction: column; gap: 8px; }
+.stmt { display: flex; gap: 10px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); font-size: 18px; }
+.stmt b { color: var(--accent-ink); }
+.body-lines { display: flex; flex-direction: column; gap: 4px; font-size: 17px; }
+.fig { position: relative; margin: 0; background: var(--fig-bg); border: 1px solid var(--line); border-radius: 12px; padding: 8px; }
+.fig-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.fig-inner { margin: 0 auto; }
+.fig-inner svg { display: block; width: 100%; height: auto; }
+.fig.wide .fig-inner { min-width: 520px; }
+.fig.overflowing:not(.at-end) .fig-scroll { -webkit-mask-image: linear-gradient(to right, #000 82%, transparent); mask-image: linear-gradient(to right, #000 82%, transparent); }
+.fig-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 6px; }
+.fig-hint { font-size: 14px; color: #55615F; visibility: hidden; }
+.fig.overflowing .fig-hint { visibility: visible; }
+.fig-zoom {
+  display: inline-flex; align-items: center; gap: 4px; min-height: 40px; padding: 0 12px; margin-left: auto;
+  border-radius: 999px; border: 1px solid #C7D2D2; background: #FFFFFF; color: #0E6E78; font-size: 14px; font-weight: 600;
+}
+.fig-msg { padding: 24px 12px; text-align: center; color: #55615F; font-size: 15px; }
+.opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.opts.long { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) {
+  .opts { grid-template-columns: minmax(0, 1fr); }
+  .answered .opts:not(.long) { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+}
+.opt {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 58px; padding: 10px 16px 10px 18px;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--text);
+  font-size: 19px; font-weight: 600; text-align: left; line-height: 1.4;
+}
+.opt:hover:not([disabled]) { border-color: var(--accent); background: var(--accent-soft); }
+.opt .ol { font-weight: 700; }
+.opt .otext { flex: 1 1 auto; overflow-wrap: anywhere; }
+.opts.long .opt { align-items: flex-start; font-size: 17px; font-weight: 500; padding-top: 14px; padding-bottom: 14px; }
+.opts.long .opt .ol { font-weight: 700; }
+.opt[disabled] { cursor: default; }
+.opt.dim { color: var(--muted); border-color: var(--line-soft); }
+.opt.right { background: var(--accent); border: 2px solid var(--accent); color: var(--on-accent); font-weight: 700; }
+.opt.wrong { background: var(--wrong-soft); border: 2px solid var(--wrong); color: var(--wrong-ink); font-weight: 700; }
+.opt svg { flex: 0 0 auto; }
+
+/* Feedback */
+.fbwrap { display: flex; flex-direction: column; gap: 14px; }
+.fbwrap[hidden] { display: none; }
+.fb { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+@media (min-width: 900px) { .fb { padding: 24px; } }
+.fb-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.verdict { display: flex; align-items: center; gap: 8px; font-size: 21px; font-weight: 700; }
+.verdict:focus { outline: none; }
+.verdict.ok { color: var(--accent-ink); }
+.verdict.no { color: var(--wrong-ink); }
+.fb-ans { font-size: 16px; font-weight: 600; }
+.fb-time { font-size: 15px; color: var(--muted); }
+.fb-time.late { color: var(--late-ink); }
+.note { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 10px; font-size: 16px; line-height: 1.6; }
+.note .nl { font-size: 14px; font-weight: 700; }
+.note-wrong { background: var(--wrong-soft); } .note-wrong .nl { color: var(--wrong-ink); }
+.note-tip { background: var(--accent-soft); } .note-tip .nl { color: var(--accent-ink); }
+.disclose {
+  display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 14px;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--accent-ink); font-size: 16px; font-weight: 600; width: 100%;
+}
+.disclose[aria-expanded="true"] svg { transform: rotate(180deg); }
+.sol { font-size: 16px; line-height: 1.7; padding: 2px 4px 0; }
+.sol[hidden] { display: none; }
+
+/* Summary */
+.summary { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "score" "stats" "list" "actions"; gap: 16px; }
+@media (min-width: 900px) {
+  .summary { grid-template-columns: minmax(320px, 1fr) minmax(0, 1.5fr); grid-template-areas: "score list" "stats list" "actions list"; gap: 16px 24px; align-items: start; }
+}
+.score { grid-area: score; padding: 24px 18px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.score-num { font-size: 56px; font-weight: 700; line-height: 1.1; color: var(--accent-ink); }
+.score-num span { font-size: 28px; color: var(--muted); }
+.stats { grid-area: stats; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.stat { padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.stat-num { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat-num span { font-size: 16px; font-weight: 500; color: var(--muted); }
+.stat .bar { flex: none; order: 0; height: 6px; margin-top: 6px; }
+.actions { grid-area: actions; display: flex; flex-direction: column; gap: 10px; }
+.actions .link-btn { justify-content: center; }
+.wlist { grid-area: list; display: flex; flex-direction: column; gap: 10px; }
+.wlist h2 { font-size: 18px; font-weight: 700; }
+.witems { overflow: hidden; }
+.witem + .witem { border-top: 1px solid var(--line-soft); }
+.wrow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 16px; }
+.wrow .wmain { display: flex; flex-direction: column; flex: 1 1 180px; min-width: 0; }
+.wrow .wid { font-size: 16px; font-weight: 600; }
+.wrow .wans { font-size: 14px; color: var(--muted); }
+.wtoggle { min-height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--accent-ink); font-size: 15px; font-weight: 600; }
+.wdetail { display: flex; flex-direction: column; gap: 10px; padding: 0 16px 16px; }
+.wdetail[hidden] { display: none; }
+.wdetail .wq { font-size: 16px; }
+.empty-state { padding: 20px; font-size: 16px; }
+
+/* Messages, check page, zoom dialog */
+.msg { padding: 24px; display: flex; flex-direction: column; gap: 10px; max-width: 720px; }
+.msg h1 { font-size: 24px; }
+.check table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.check th, .check td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.table-scroll { overflow-x: auto; }
+dialog.zoom { width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; margin: 0; padding: 0; border: 0; background: rgba(10, 20, 22, .92); }
+dialog.zoom::backdrop { background: rgba(10, 20, 22, .6); }
+.zoom-bar { position: sticky; top: 0; display: flex; justify-content: flex-end; padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 10px; }
+.zoom-close { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 0; background: #FFFFFF; color: #0E6E78; font-size: 16px; font-weight: 700; }
+.zoom-body { overflow: auto; height: calc(100% - 64px); padding: 0 12px 24px; }
+.zoom-body .zoom-inner { background: #FFFFFF; border-radius: 12px; padding: 12px; margin: 0 auto; }
+.zoom-body svg { display: block; width: 100%; height: auto; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./" data-nav>ติวไฟไหม้</a>
+    <span class="top-sub" id="topSub">สุ่มทำโจทย์เพิ่ม</span>
+  </div>
+</header>
+<div class="strip" id="strip" hidden></div>
+<main class="wrap" id="app" aria-live="polite"><p class="muted">กำลังโหลดคลังโจทย์…</p></main>
+<footer class="foot">© ติวไฟไหม้</footer>
+<dialog class="zoom" id="zoom" aria-label="รูปประกอบขนาดใหญ่">
+  <div class="zoom-bar"><button type="button" class="zoom-close" id="zoomClose">ปิดรูป</button></div>
+  <div class="zoom-body"><div class="zoom-inner" id="zoomInner"></div></div>
+</dialog>
+
+<!-- PapaParse 5.4.1 (ใช้อ่าน bank.csv) โหลดจาก cdnjs ถ้าไม่สำเร็จจะใช้สำเนาในโฟลเดอร์ vendor -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha384-D/t0ZMqQW31H3az8ktEiNb39wyKnS82iFY52QPACM+IjKW3jDUhyIgh2PApRqJZs" crossorigin="anonymous"></script>
+<script>window.Papa || document.write('<script src="vendor/papaparse-5.4.1.min.js"><\/script>');</script>
+<script>
+(() => {
+'use strict';
+
+/* ===== ตั้งค่า ===== */
+const TOPICS = {
+  N1: 'อนุกรม',
+  N2: 'ตารางและแผนภาพตัวเลข',
+  N3: 'ร้อยละ อัตราส่วน อัตราเร็ว',
+  N4: 'อ่านกราฟและตาราง',
+  N5: 'ข้อมูลเพียงพอหรือไม่',
+  N6: 'ประมาณค่าและคิดเลขเร็ว'
+};
+const NO_SHUFFLE_TOPICS = ['N5'];          // หัวข้อที่ไม่สลับลำดับตัวเลือกเลย
+// เว็บหาไฟล์ตามลำดับนี้ ใช้ไฟล์แรกที่เจอ (วางในโฟลเดอร์ data หรือวางข้าง index.html ก็ได้)
+const DATA_JSON = ['data/bank.json', 'bank.json'];
+const DATA_CSV = ['data/bank.csv', 'bank.csv'];
+const FIG_DIR = 'figures/';
+const COUNTS = [5, 10, 20];
+const LETTERS = ['ก', 'ข', 'ค', 'ง', 'จ'];
+const LEVEL_TO_STARS = { 'ง่าย': 1, 'กลาง': 2, 'ยาก': 3 };
+const DEFAULT_TIME = { 1: 35, 2: 50, 3: 60 };
+const KEY_SEEN = 'tfm-seen-v1', KEY_SETTINGS = 'tfm-settings-v1';
+
+/* ===== ตัวช่วยทั่วไป ===== */
+const app = document.getElementById('app');
+const strip = document.getElementById('strip');
+const topSub = document.getElementById('topSub');
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtTime = (sec) => { sec = Math.max(0, Math.round(sec)); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); };
+const shuffle = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const reduceMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ICON = {
+  check: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>',
+  cross: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  clock: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M10 2h4"/></svg>',
+  back: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>',
+  chevron: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>',
+  zoom: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg>'
+};
+const starsHtml = (n) => `<span class="stars" role="img" aria-label="ระดับ ${n} ดาว"><span aria-hidden="true">${'★'.repeat(n)}<span class="off">${'★'.repeat(3 - n)}</span></span></span>`;
+
+/* ===== ที่เก็บข้อมูลในเครื่อง (ใช้ไม่ได้ก็ยังทำงานต่อ) ===== */
+const store = (() => {
+  let ls = null;
+  try { const k = '__tfm_test'; window.localStorage.setItem(k, '1'); window.localStorage.removeItem(k); ls = window.localStorage; } catch (e) { ls = null; }
+  const mem = {};
+  return {
+    available: !!ls,
+    get(key, fallback) {
+      try { const raw = ls ? ls.getItem(key) : mem[key]; return raw == null ? fallback : JSON.parse(raw); } catch (e) { return fallback; }
+    },
+    set(key, value) {
+      const raw = JSON.stringify(value);
+      try { if (ls) ls.setItem(key, raw); else mem[key] = raw; } catch (e) { mem[key] = raw; }
+    }
+  };
+})();
+
+/* ===== อ่านคลังโจทย์ ===== */
+function topicFrom(v) {
+  const s = String(v == null ? '' : v).toUpperCase();
+  const m = s.match(/N\s*-?\s*([1-6])/);
+  if (m) return 'N' + m[1];
+  const d = s.trim().match(/^([1-6])$/);
+  return d ? 'N' + d[1] : null;
+}
+function letterIndex(v) {
+  const s = String(v == null ? '' : v).trim().replace(/[.)\s]/g, '');
+  const i = LETTERS.indexOf(s);
+  if (i >= 0) return i;
+  const n = parseInt(s, 10);
+  return n >= 1 && n <= 5 ? n - 1 : -1;
+}
+function toInt(v) { const n = parseInt(String(v == null ? '' : v).replace(/[^\d]/g, ''), 10); return isNaN(n) ? null : n; }
+function parseStars(v, level) {
+  const n = toInt(v);
+  if (n >= 1 && n <= 3) return n;
+  const c = (String(v || '').match(/★/g) || []).length;
+  if (c >= 1 && c <= 3) return c;
+  return LEVEL_TO_STARS[String(level || '').trim()] || 2;
+}
+function parseYes(v, fallback) {
+  const s = String(v == null ? '' : v).trim().toLowerCase();
+  if (!s) return fallback;
+  return !['ไม่', 'ไม่ได้', 'ไม่ใช่', 'no', 'n', 'false', '0'].includes(s);
+}
+function parseReasons(text) {
+  const out = [null, null, null, null, null];
+  String(text || '').split(/\|(?=\s*[กขคงจ]\s*[:：])/).forEach((part) => {
+    const m = part.trim().match(/^([กขคงจ])\s*[:：]\s*([\s\S]+)$/);
+    if (m) out[LETTERS.indexOf(m[1])] = m[2].trim();
+  });
+  return out;
+}
+// โจทย์รุ่นเก่าที่เขียนอนุกรมไว้ในประโยค: ดึงพจน์ออกมาแสดงเป็นกล่อง
+const TERM = '(?:[−-]?(?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d+)?|\\?)';
+const SERIES_IN_TEXT = new RegExp(TERM + '(?:,\\s+' + TERM + '){2,}');
+function extractSeries(text) {
+  const m = String(text).match(SERIES_IN_TEXT);
+  if (!m || m[0].indexOf('?') < 0) return null;
+  return { question: (text.slice(0, m.index) + text.slice(m.index + m[0].length)).replace(/\s{2,}/g, ' ').replace(/\s+([?:])/g, '$1').trim(), line: m[0] };
+}
+function trimOptions(list) {
+  const opts = list.map((x) => (x == null ? '' : String(x).trim()));
+  while (opts.length && !opts[opts.length - 1]) opts.pop();
+  return opts;
+}
+function check(q, where, problems) {
+  const p = [];
+  if (!q.id) p.push('ไม่มี id');
+  if (!q.topic) p.push('ไม่ทราบรหัสหัวข้อ (ต้องเป็น N1–N6)');
+  if (!q.question) p.push('ไม่มีข้อความโจทย์');
+  if (q.options.length < 2) p.push('ตัวเลือกน้อยกว่า 2 ข้อ');
+  if (q.options.some((o) => !o)) p.push('มีตัวเลือกว่าง');
+  if (!(q.answerIndex >= 0 && q.answerIndex < q.options.length)) p.push('ช่องคำตอบไม่ตรงกับตัวเลือก (ต้องเป็น ก–จ)');
+  if (p.length) { problems.push({ where, id: q.id || '-', msg: p.join(' · ') }); return null; }
+  return q;
+}
+
+function normalizeJson(data, problems) {
+  const list = Array.isArray(data) ? data : (data && Array.isArray(data.questions) ? data.questions : null);
+  if (!list) throw new Error('bank.json ไม่มีรายการ "questions"');
+  const letters = (data && data.meta && Array.isArray(data.meta.letters) && data.meta.letters.length === 5) ? data.meta.letters : LETTERS;
+  const out = [];
+  list.forEach((q, i) => {
+    if (!q || typeof q !== 'object') return;
+    const reasons = [null, null, null, null, null];
+    const dr = q.distractor_reasons || {};
+    Object.keys(dr).forEach((k) => { const ix = letters.indexOf(k) >= 0 ? letters.indexOf(k) : LETTERS.indexOf(k); if (ix >= 0) reasons[ix] = String(dr[k]); });
+    const stars = parseStars(q.stars, q.level);
+    const body = Array.isArray(q.body) ? q.body : (q.body ? String(q.body).split(/\r?\n/) : []);
+    const item = {
+      id: String(q.id || '').trim(),
+      topic: topicFrom(q.code || q.topic || q.id),
+      type: q.type || '',
+      stars,
+      question: String(q.question || '').trim(),
+      body: body.map((s) => String(s).trim()).filter(Boolean),
+      showBody: typeof q.show_body === 'boolean' ? q.show_body : null,
+      options: trimOptions(q.options || []),
+      answerIndex: typeof q.answer_index === 'number' ? q.answer_index : letterIndex(q.answer),
+      solution: String(q.solution || ''),
+      shortcut: String(q.shortcut || ''),
+      reasons,
+      time: toInt(q.time_target_s) || DEFAULT_TIME[stars],
+      imageSvg: typeof q.image_svg === 'string' ? q.image_svg : '',
+      imageFile: q.image ? String(q.image).trim() : '',
+      dataset: q.dataset ? String(q.dataset).trim() : '',
+      shuffle: q.shuffle_ok !== false
+    };
+    const ok = check(item, 'bank.json ข้อที่ ' + (i + 1), problems);
+    if (ok) out.push(ok);
+  });
+  return out;
+}
+
+function normalizeCsv(text, problems, stats) {
+  if (!window.Papa) throw new Error('โหลดตัวอ่านไฟล์ CSV (PapaParse) ไม่สำเร็จ');
+  const res = window.Papa.parse(text.replace(/^\uFEFF/, ''), { header: true, skipEmptyLines: 'greedy', transformHeader: (h) => h.replace(/^\uFEFF/, '').trim() });
+  const fields = res.meta.fields || [];
+  if (!fields.includes('id') || !fields.includes('โจทย์')) throw new Error('bank.csv ต้องมีหัวคอลัมน์ "id" และ "โจทย์" ในแถวแรก');
+  const legacy = !fields.includes('รหัสหัวข้อ') && fields.includes('เฉลยสั้น');
+  stats.format = legacy ? 'CSV รุ่นเก่า' : 'CSV รุ่นใหม่';
+  const out = [];
+  res.data.forEach((r, i) => {
+    const row = i + 2;
+    const id = String(r.id || '').trim();
+    if (legacy && /^NT-/i.test(id)) { stats.skippedNT++; return; }
+    let question = String(r['โจทย์'] || '').trim();
+    const level = r['ระดับ'];
+    const stars = parseStars(r['ดาว'], level);
+    const topic = topicFrom(r['รหัสหัวข้อ'] || id) || topicFrom(id);
+    let body = String(r['ข้อมูลประกอบ'] || '').split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+    let solution = String(r['วิธีทำ'] || '').trim();
+    let shortcut = String(r['วิธีลัด'] || '').trim();
+    if (legacy) {
+      const parts = String(r['เฉลยสั้น'] || '').split(/\s*\|\s*ลัด\s*:\s*/);
+      solution = (parts[0] || '').trim();
+      shortcut = (parts.slice(1).join(' ') || '').trim();
+    }
+    if (topic === 'N1' && !body.length) {
+      const s = extractSeries(question);
+      if (s) { question = s.question; body = [s.line]; }
+    }
+    const item = {
+      id, topic,
+      type: String(r['ประเภทโจทย์'] || r['หัวข้อย่อย'] || '').trim(),
+      stars, question, body, showBody: null,
+      options: trimOptions(LETTERS.map((l) => r[l])),
+      answerIndex: letterIndex(r['คำตอบ']),
+      solution, shortcut,
+      reasons: parseReasons(r['เหตุผลตัวเลือกหลอก']),
+      time: toInt(r['เวลาเป้าหมาย_วินาที']) || DEFAULT_TIME[stars],
+      imageSvg: '',
+      imageFile: String(r['ไฟล์รูป'] || '').trim(),
+      dataset: String(r['ชุดข้อมูล'] || '').trim(),
+      shuffle: parseYes(r['สลับตัวเลือกได้'], true)
+    };
+    const ok = check(item, 'bank.csv แถวที่ ' + row, problems);
+    if (ok) out.push(ok);
+  });
+  return out;
+}
+
+async function fetchText(url) {
+  const r = await fetch(url, { cache: 'no-cache' });
+  if (!r.ok) { const e = new Error(url + ' (HTTP ' + r.status + ')'); e.status = r.status; throw e; }
+  return r.text();
+}
+
+async function loadBank() {
+  const problems = [];
+  const stats = { source: '', format: '', skippedNT: 0, duplicates: 0 };
+  let list;
+  let jsonText = null;
+  let jsonPath = null, csvPath = null;
+  for (const path of DATA_JSON) {
+    try { jsonText = await fetchText(path); jsonPath = path; break; } catch (e) { jsonText = null; }
+  }
+  if (jsonText != null) {
+    let data;
+    try { data = JSON.parse(jsonText.replace(/^\uFEFF/, '')); }
+    catch (e) { throw new Error('ไฟล์ ' + jsonPath + ' เขียนผิดรูปแบบ อ่านไม่ได้ (' + e.message + ')'); }
+    list = normalizeJson(data, problems);
+    stats.source = jsonPath; stats.format = 'JSON';
+  } else {
+    let csvText;
+    for (const path of DATA_CSV) {
+      try { csvText = await fetchText(path); csvPath = path; break; } catch (e) { csvText = null; }
+    }
+    if (csvText == null) throw new Error('ไม่พบไฟล์คลังโจทย์ ต้องมี bank.json หรือ bank.csv วางข้าง index.html (หรือในโฟลเดอร์ data)');
+    list = normalizeCsv(csvText, problems, stats);
+    stats.source = csvPath;
+  }
+  return finishBank(list, problems, stats);
+}
+
+// อ่านไฟล์คลังโจทย์ที่ผู้ใช้เลือกจากเครื่อง (ใช้ตอนเปิด index.html ตรงจากเครื่อง)
+function bankFromText(text, name) {
+  const problems = [];
+  const stats = { source: name + ' (ไฟล์ในเครื่อง)', format: '', skippedNT: 0, duplicates: 0 };
+  let list;
+  if (/\.json$/i.test(name) || /^\s*[\[{]/.test(text.replace(/^\uFEFF/, ''))) {
+    let data;
+    try { data = JSON.parse(text.replace(/^\uFEFF/, '')); }
+    catch (e) { throw new Error('ไฟล์ ' + name + ' เขียนผิดรูปแบบ อ่านไม่ได้ (' + e.message + ')'); }
+    list = normalizeJson(data, problems);
+    stats.format = 'JSON';
+  } else {
+    list = normalizeCsv(text, problems, stats);
+  }
+  return finishBank(list, problems, stats);
+}
+
+function finishBank(list, problems, stats) {
+  // id ซ้ำ: ใช้ข้อแรก ข้ามข้อหลัง
+  const seen = new Set();
+  list = list.filter((q) => {
+    if (seen.has(q.id)) { stats.duplicates++; problems.push({ where: stats.source, id: q.id, msg: 'id ซ้ำกับข้อก่อนหน้า (ข้ามข้อนี้)' }); return false; }
+    seen.add(q.id); return true;
+  });
+  // ข้อในชุดข้อมูลเดียวกันที่ไม่มีรูป ให้ใช้รูปของข้ออื่นในชุดนั้น
+  const dsImg = {};
+  list.forEach((q) => { if (q.dataset && !dsImg[q.dataset] && (q.imageSvg || q.imageFile)) dsImg[q.dataset] = { svg: q.imageSvg, file: q.imageFile }; });
+  list.forEach((q) => {
+    if (!q.imageSvg && !q.imageFile && q.dataset && dsImg[q.dataset]) { q.imageSvg = dsImg[q.dataset].svg; q.imageFile = dsImg[q.dataset].file; }
+    if (NO_SHUFFLE_TOPICS.includes(q.topic)) q.shuffle = false;
+  });
+  problems.forEach((p) => console.warn('[ติวไฟไหม้] ' + p.where + ' (' + p.id + '): ' + p.msg));
+  return { list, problems, stats };
+}
+
+/* ===== รูปประกอบ ===== */
+const figCache = new Map();
+function getFigureText(q) {
+  if (q.imageSvg) return Promise.resolve(q.imageSvg);
+  if (!figCache.has(q.imageFile)) figCache.set(q.imageFile, fetchText(FIG_DIR + encodeURIComponent(q.imageFile)));
+  return figCache.get(q.imageFile);
+}
+function svgFromText(text) {
+  const doc = new DOMParser().parseFromString(text, 'image/svg+xml');
+  const svg = doc.documentElement;
+  if (!svg || svg.nodeName.toLowerCase() !== 'svg' || doc.getElementsByTagName('parsererror').length) return null;
+  svg.querySelectorAll('script, foreignObject').forEach((n) => n.remove());
+  [svg, ...svg.querySelectorAll('*')].forEach((el) => {
+    [...el.attributes].forEach((a) => {
+      if (/^on/i.test(a.name) || (/href$/i.test(a.name) && /^\s*javascript:/i.test(a.value))) el.removeAttribute(a.name);
+    });
+  });
+  let w = 0;
+  const vb = (svg.getAttribute('viewBox') || '').trim().split(/[\s,]+/).map(Number);
+  if (vb.length === 4 && vb[2] > 0) w = vb[2];
+  if (!w) w = parseFloat(svg.getAttribute('width')) || 600;
+  if (!svg.getAttribute('viewBox')) svg.setAttribute('viewBox', '0 0 ' + w + ' ' + (parseFloat(svg.getAttribute('height')) || w * 0.6));
+  svg.removeAttribute('width'); svg.removeAttribute('height');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  return { node: document.importNode(svg, true), width: w };
+}
+function mountFigure(figEl, q) {
+  const inner = figEl.querySelector('.fig-inner');
+  const label = q.body.length ? q.body.join(' ; ') : 'รูปประกอบโจทย์';
+  getFigureText(q).then((text) => {
+    const r = svgFromText(text);
+    if (!r) throw new Error('bad svg');
+    r.node.setAttribute('role', 'img');
+    r.node.setAttribute('aria-label', label);
+    inner.style.maxWidth = r.width + 'px';
+    inner.innerHTML = '';
+    inner.appendChild(r.node);
+    if (r.width > 700) figEl.classList.add('wide');
+    const bar = document.createElement('figcaption');
+    bar.className = 'fig-bar';
+    bar.innerHTML = '<span class="fig-hint">ปัดซ้ายเพื่อดูรูปที่เหลือ</span><button type="button" class="fig-zoom">' + ICON.zoom + 'ขยายรูป</button>';
+    bar.querySelector('button').addEventListener('click', () => openZoom(text, r.width));
+    figEl.appendChild(bar);
+    const sc = figEl.querySelector('.fig-scroll');
+    const sync = () => {
+      figEl.classList.toggle('overflowing', sc.scrollWidth > sc.clientWidth + 2);
+      figEl.classList.toggle('at-end', sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 4);
+    };
+    sc.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    requestAnimationFrame(sync);
+  }).catch(() => {
+    inner.innerHTML = '<p class="fig-msg">ไม่พบรูป ' + esc(FIG_DIR + (q.imageFile || '')) + '</p>';
+  });
+}
+const zoom = document.getElementById('zoom');
+const zoomInner = document.getElementById('zoomInner');
+function openZoom(text, width) {
+  const r = svgFromText(text);
+  if (!r) return;
+  zoomInner.innerHTML = '';
+  zoomInner.style.width = Math.round(width * 1.35) + 'px';
+  zoomInner.style.maxWidth = 'none';
+  zoomInner.appendChild(r.node);
+  if (typeof zoom.showModal === 'function') zoom.showModal(); else zoom.setAttribute('open', '');
+  document.getElementById('zoomClose').focus();
+}
+document.getElementById('zoomClose').addEventListener('click', () => { if (zoom.close) zoom.close(); else zoom.removeAttribute('open'); });
+zoom.addEventListener('click', (e) => { if (e.target === zoom && zoom.close) zoom.close(); });
+
+/* ===== สุ่มโจทย์ & จำข้อที่ทำแล้ว ===== */
+function seenMap() { return store.get(KEY_SEEN, {}) || {}; }
+function markSeen(q) {
+  const m = seenMap();
+  const arr = Array.isArray(m[q.topic]) ? m[q.topic] : [];
+  if (!arr.includes(q.id)) arr.push(q.id);
+  m[q.topic] = arr;
+  store.set(KEY_SEEN, m);
+}
+function forgetSeen(topic, ids) {
+  const m = seenMap();
+  const drop = new Set(ids);
+  m[topic] = (m[topic] || []).filter((id) => !drop.has(id));
+  store.set(KEY_SEEN, m);
+}
+function poolFor(topic, star) { return BANK.list.filter((q) => q.topic === topic && (!star || q.stars === star)); }
+function draw(topic, star, n) {
+  const pool = poolFor(topic, star);
+  const seen = new Set(seenMap()[topic] || []);
+  let picked = shuffle(pool.filter((q) => !seen.has(q.id))).slice(0, n);
+  if (picked.length < n) {
+    // ทำครบทุกข้อในกลุ่มนี้แล้ว: เริ่มวนรอบใหม่
+    forgetSeen(topic, pool.map((q) => q.id));
+    const have = new Set(picked.map((q) => q.id));
+    picked = picked.concat(shuffle(pool.filter((q) => !have.has(q.id))).slice(0, n - picked.length));
+  }
+  return picked;
+}
+
+/* ===== ปรับตัวอักษรในวิธีลัด/วิธีทำ เมื่อสลับตัวเลือก ===== */
+const L1 = '[กขคงจ](?![\\u0E01-\\u0E7F.])';
+const LETTER_LIST = new RegExp('(ตัด|เหลือ|ตอบ)(\\s+)(' + L1 + '(?:\\s*,\\s*' + L1 + ')*)', 'g');
+function remapLetters(text, origToDisp) {
+  if (!text || !origToDisp) return text;
+  return text.replace(LETTER_LIST, (m, kw, sp, list) => {
+    const ls = list.split(/\s*,\s*/).map((x) => LETTERS[origToDisp[LETTERS.indexOf(x.trim())]] || x);
+    ls.sort((a, b) => LETTERS.indexOf(a) - LETTERS.indexOf(b));
+    return kw + sp + ls.join(', ');
+  });
+}
+
+/* ===== สถานะ ===== */
+let BANK = null;
+let session = null;
+let timerId = null;
+
+function settings() {
+  const s = store.get(KEY_SETTINGS, {}) || {};
+  return { count: COUNTS.includes(s.count) ? s.count : 10, star: [0, 1, 2, 3].includes(s.star) ? s.star : 0 };
+}
+function saveSettings(s) { store.set(KEY_SETTINGS, s); }
+
+function makeItem(q) {
+  const n = q.options.length;
+  const idx = [...Array(n).keys()];
+  const perm = q.shuffle ? shuffle(idx) : idx;           // perm[ตำแหน่งที่แสดง] = ตำแหน่งในไฟล์
+  const origToDisp = []; perm.forEach((orig, disp) => { origToDisp[orig] = disp; });
+  return { q, perm, origToDisp, chosen: null, time: 0, correct: false };
+}
+function startSession(topic, qs, star, count) {
+  session = { topic, star, count, items: qs.map(makeItem), idx: 0 };
+  renderQuestion();
+}
+
+/* ===== นำทาง ===== */
+let navSearch = null;   // ใช้แทน location.search เมื่อเบราว์เซอร์ไม่ยอมให้เปลี่ยนที่อยู่ (เปิดไฟล์จากเครื่อง)
+function currentSearch() { return navSearch != null ? navSearch : location.search; }
+function currentTopic() { const t = new URLSearchParams(currentSearch()).get('topic'); const id = topicFrom(t); return id && TOPICS[id] ? id : null; }
+function navigate(url) {
+  const u = new URL(url, location.href);
+  // เปิดจากเครื่อง: "./" ชี้ไปที่โฟลเดอร์ จึงให้คงอยู่ที่ไฟล์ index.html เดิม
+  if (location.protocol === 'file:' && u.pathname !== location.pathname) u.pathname = location.pathname;
+  try { history.pushState(null, '', u.href); navSearch = null; }
+  catch (e) { navSearch = new URL(url, location.href).search; }
+  route();
+}
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('a[data-nav]');
+  if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+  e.preventDefault();
+  if (e.detail > 0) a.blur();   // คลิกด้วยเมาส์: ไม่ต้องค้างกรอบโฟกัสไว้
+  navigate(a.getAttribute('href'));
+});
+window.addEventListener('popstate', () => { navSearch = null; route(); });
+
+function setHeader(topic) {
+  topSub.textContent = topic ? topic + ' · ' + TOPICS[topic] : 'สุ่มทำโจทย์เพิ่ม';
+  document.title = topic ? 'ติวไฟไหม้ · ' + topic + ' ' + TOPICS[topic] : 'ติวไฟไหม้ · สุ่มทำโจทย์เพิ่ม';
+}
+function stopTimer() { if (timerId) { clearInterval(timerId); timerId = null; } }
+function screen(html, topic) {
+  stopTimer();
+  strip.hidden = true; strip.innerHTML = '';
+  setHeader(topic);
+  app.innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function route() {
+  if (!BANK) return;
+  session = null;
+  const params = new URLSearchParams(currentSearch());
+  if (params.has('check')) return renderCheck();
+  const topic = currentTopic();
+  if (topic) renderSetup(topic); else renderPicker();
+}
+
+/* ===== หน้าเลือกหัวข้อ ===== */
+function renderPicker() {
+  const cards = Object.keys(TOPICS).map((id) => {
+    const n = BANK.list.filter((q) => q.topic === id).length;
+    return `<a class="card topic${n ? '' : ' empty'}" href="?topic=${id}" data-nav ${n ? '' : 'aria-disabled="true" tabindex="-1"'}>
+      <span class="tcode">${id}</span><span class="tname">${esc(TOPICS[id])}</span>
+      <span class="tcount">${n ? n + ' ข้อในคลัง' : 'ยังไม่มีโจทย์'}</span></a>`;
+  }).join('');
+  screen(`<div class="intro"><h1>เลือกหัวข้อ</h1>
+    <p class="muted">TGAT2 ความสามารถเชิงตัวเลข · สุ่มโจทย์มาฝึกต่อจากชีท สแกน QR ในชีทจะเข้าหัวข้อนั้นโดยตรง</p></div>
+    <nav class="topics" aria-label="หัวข้อ">${cards}</nav>
+    ${BANK.problems.length ? `<p class="note-bar">ข้ามโจทย์ที่ข้อมูลไม่ครบ ${BANK.problems.length} ข้อ · <a href="?check=1" data-nav>ดูรายละเอียด</a></p>` : ''}`, null);
+}
+
+/* ===== หน้าตั้งค่าชุดโจทย์ ===== */
+function renderSetup(topic) {
+  const st = settings();
+  screen(`<div class="setup">
+    <a class="link-btn" href="./" data-nav>${ICON.back}เปลี่ยนหัวข้อ</a>
+    <div class="setup-grid">
+      <section class="card topic-card">
+        <span class="tcode" style="font-weight:700;color:var(--accent-ink)">${topic}</span>
+        <h1>${esc(TOPICS[topic])}</h1>
+        <p class="muted" id="poolInfo"></p>
+        <p class="muted small">สุ่มข้อที่ยังไม่เคยทำก่อน ทำครบทุกข้อแล้วจึงเริ่มวนใหม่</p>
+        ${store.available ? '' : '<p class="warn">เบราว์เซอร์นี้จำข้อที่ทำแล้วไม่ได้ (เช่น โหมดไม่ระบุตัวตน) ระบบจะสุ่มจากทุกข้อ</p>'}
+      </section>
+      <section class="card form-card">
+        <fieldset><legend>จำนวนข้อ</legend>
+          <div class="seg seg-3" id="countSeg">${COUNTS.map((c) => `<button type="button" data-count="${c}" aria-pressed="${c === st.count}">${c} ข้อ</button>`).join('')}</div>
+        </fieldset>
+        <fieldset><legend>ระดับ</legend>
+          <div class="seg seg-4" id="starSeg">
+            <button type="button" data-star="0" aria-pressed="${st.star === 0}">ทั้งหมด</button>
+            ${[1, 2, 3].map((s) => `<button type="button" class="star-btn" data-star="${s}" aria-pressed="${st.star === s}" aria-label="${s} ดาว">${'★'.repeat(s)}</button>`).join('')}
+          </div>
+        </fieldset>
+        <button type="button" class="btn" id="startBtn"></button>
+      </section>
+    </div></div>`, topic);
+
+  const update = () => {
+    const s = settings();
+    const pool = poolFor(topic, s.star);
+    const seen = new Set(seenMap()[topic] || []);
+    const unseen = pool.filter((q) => !seen.has(q.id)).length;
+    const scope = s.star ? 'ระดับ ' + '★'.repeat(s.star) + ' มี ' : 'ในคลัง ';
+    document.getElementById('poolInfo').textContent = pool.length
+      ? scope + pool.length + ' ข้อ' + (store.available ? ' · ยังไม่เคยทำ ' + unseen + ' ข้อ' : '')
+      : 'ยังไม่มีโจทย์ระดับนี้ในหัวข้อนี้ ลองเลือกระดับอื่น';
+    const n = Math.min(s.count, pool.length);
+    const btn = document.getElementById('startBtn');
+    btn.disabled = !pool.length;
+    btn.textContent = pool.length ? 'เริ่มทำ ' + n + ' ข้อ' : 'ไม่มีโจทย์ให้สุ่ม';
+    document.querySelectorAll('#countSeg button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.count === s.count)));
+    document.querySelectorAll('#starSeg button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.star === s.star)));
+  };
+  document.getElementById('countSeg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; saveSettings({ ...settings(), count: +b.dataset.count }); update(); });
+  document.getElementById('starSeg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; saveSettings({ ...settings(), star: +b.dataset.star }); update(); });
+  document.getElementById('startBtn').addEventListener('click', () => { const s = settings(); startSession(topic, draw(topic, s.star, s.count), s.star, s.count); });
+  update();
+}
+
+/* ===== หน้าทำโจทย์ ===== */
+function isSeriesLine(line) {
+  const t = line.split(/,\s+/).map((x) => x.trim()).filter(Boolean);
+  return t.length >= 3 && t.every((x) => /^([−-]?\d[\d,]*(\.\d+)?|\?|\d+\/\d+)$/.test(x));
+}
+function bodyHtml(q) {
+  const hasImage = !!(q.imageSvg || q.imageFile);
+  if (hasImage) {
+    return `<figure class="fig"><div class="fig-scroll"><div class="fig-inner"><p class="fig-msg">กำลังโหลดรูป…</p></div></div></figure>`;
+  }
+  if (q.showBody === false || !q.body.length) return '';
+  const lines = q.body;
+  if (lines.every(isSeriesLine)) {
+    return lines.map((line) => `<div class="series-scroll"><div class="series" aria-label="อนุกรม ${esc(line)}">${
+      line.split(/,\s+/).map((t) => `<span class="term${t.trim() === '?' ? ' q' : ''}">${esc(t.trim())}</span>`).join('')}</div></div>`).join('');
+  }
+  if (lines.every((l) => /^\(\d+\)/.test(l))) {
+    return `<div class="stmts">${lines.map((l) => { const m = l.match(/^(\(\d+\))\s*(.*)$/); return `<div class="stmt"><b>${esc(m[1])}</b><span>${esc(m[2])}</span></div>`; }).join('')}</div>`;
+  }
+  return `<div class="body-lines">${lines.map((l) => `<p>${esc(l)}</p>`).join('')}</div>`;
+}
+function optionText(it, disp) { return it.q.options[it.perm[disp]]; }
+function dispLetter(it, orig) { return LETTERS[it.origToDisp[orig]]; }
+
+function renderQuestion() {
+  const s = session, it = s.items[s.idx], q = it.q;
+  const long = q.topic === 'N5' || q.options.some((o) => o.length > 14);
+  screen(`<section class="quiz" id="quiz">
+    <div class="qgrid">
+      <article class="card qcard" aria-labelledby="qText">
+        <div class="qhead"><span>${esc(q.id)}${q.type ? ' · ' + esc(q.type) : ''}</span>${starsHtml(q.stars)}</div>
+        <p class="qtext" id="qText">${esc(q.question)}</p>
+        ${bodyHtml(q)}
+        ${(q.imageSvg || q.imageFile) && q.body.length ? `<p class="sr-only">${esc(q.body.join(' ; '))}</p>` : ''}
+      </article>
+      <div class="opts${long ? ' long' : ''}" id="opts" role="group" aria-label="ตัวเลือก">
+        ${it.perm.map((orig, disp) => `<button type="button" class="opt" data-disp="${disp}"><span class="otext"><span class="ol">${LETTERS[disp]}.</span> ${esc(q.options[orig])}</span></button>`).join('')}
+      </div>
+      <div class="fbwrap" id="fbwrap" hidden></div>
+    </div></section>`, q.topic);
+
+  const fig = app.querySelector('.fig');
+  if (fig) mountFigure(fig, q);
+
+  strip.hidden = false;
+  strip.className = 'strip';
+  strip.innerHTML = `<div class="wrap">
+    <span class="qnum">ข้อ ${s.idx + 1} / ${s.items.length}</span>
+    <div class="bar" role="progressbar" aria-label="เวลาที่ใช้เทียบกับเวลาเป้าหมาย" aria-valuemin="0" aria-valuemax="${q.time}" aria-valuenow="0"><div class="bar-fill" id="barFill"></div></div>
+    <span class="clock">${ICON.clock}<span id="clockNow">0:00</span><span class="clock-target">/ เป้า ${fmtTime(q.time)}<span id="lateTag"></span></span></span></div>`;
+  const t0 = performance.now();
+  const bar = strip.querySelector('.bar'), fill = document.getElementById('barFill'), now = document.getElementById('clockNow'), lateTag = document.getElementById('lateTag');
+  const tick = () => {
+    const sec = (performance.now() - t0) / 1000;
+    it.time = sec;
+    now.textContent = fmtTime(sec);
+    fill.style.width = Math.min(100, (sec / q.time) * 100) + '%';
+    bar.setAttribute('aria-valuenow', String(Math.min(q.time, Math.round(sec))));
+    if (sec > q.time && !strip.classList.contains('late')) { strip.classList.add('late'); lateTag.textContent = ' · เกินเวลา'; }
+  };
+  tick();
+  timerId = setInterval(tick, 250);
+
+  document.getElementById('opts').addEventListener('click', (e) => {
+    const b = e.target.closest('.opt');
+    if (b) answer(+b.dataset.disp);
+  });
+}
+
+function answer(disp) {
+  const s = session, it = s.items[s.idx], q = it.q;
+  if (it.chosen != null) return;
+  stopTimer();
+  it.chosen = it.perm[disp];
+  it.correct = it.chosen === q.answerIndex;
+  markSeen(q);
+  const rightDisp = it.origToDisp[q.answerIndex];
+  document.querySelectorAll('#opts .opt').forEach((b) => {
+    const d = +b.dataset.disp;
+    b.disabled = true;
+    if (d === rightDisp) { b.classList.add('right'); b.insertAdjacentHTML('beforeend', ICON.check); b.setAttribute('aria-label', LETTERS[d] + '. ' + optionText(it, d) + ' (คำตอบที่ถูก)'); }
+    else if (d === disp) { b.classList.add('wrong'); b.insertAdjacentHTML('beforeend', ICON.cross); b.setAttribute('aria-label', LETTERS[d] + '. ' + optionText(it, d) + ' (คำตอบที่เลือก ผิด)'); }
+    else b.classList.add('dim');
+  });
+  const term = app.querySelector('.term.q');
+  if (term && q.topic === 'N1' && app.querySelectorAll('.term.q').length === 1) { term.textContent = q.options[q.answerIndex]; term.classList.add('filled'); }
+  document.getElementById('quiz').classList.add('answered');
+
+  const map = q.shuffle ? it.origToDisp : null;
+  const late = it.time > q.time;
+  const reason = !it.correct && q.reasons[it.chosen] ? remapLetters(q.reasons[it.chosen], map) : '';
+  const last = s.idx === s.items.length - 1;
+  const fb = document.getElementById('fbwrap');
+  fb.innerHTML = `<section class="card fb" aria-labelledby="verdict">
+      <div class="fb-head">
+        <h2 class="verdict ${it.correct ? 'ok' : 'no'}" id="verdict" tabindex="-1">${it.correct ? ICON.check + 'ถูกต้อง' : ICON.cross + 'ยังไม่ถูก'}</h2>
+        <span class="fb-ans">คำตอบ ${LETTERS[rightDisp]}. ${esc(q.options[q.answerIndex])}</span>
+      </div>
+      <p class="fb-time${late ? ' late' : ''}">ใช้เวลา ${fmtTime(it.time)} · ${late ? 'เกินเวลาเป้า ' + fmtTime(q.time) : 'ทันเวลา (เป้า ' + fmtTime(q.time) + ')'}</p>
+      ${reason ? `<div class="note note-wrong"><p class="nl">ทำไมไม่ใช่ ${LETTERS[disp]}. ${esc(q.options[it.chosen])}</p><p>${esc(reason)}</p></div>` : ''}
+      ${q.shortcut ? `<div class="note note-tip"><p class="nl">วิธีลัด</p><p>${esc(remapLetters(q.shortcut, map))}</p></div>` : ''}
+      ${q.solution ? `<button type="button" class="disclose" aria-expanded="false" aria-controls="sol"><span>ดูวิธีทำ</span>${ICON.chevron}</button>
+        <div class="sol" id="sol" hidden>${esc(remapLetters(q.solution, map))}</div>` : ''}
+    </section>
+    <button type="button" class="btn" id="nextBtn">${last ? 'ดูสรุปผล' : 'ข้อถัดไป'}</button>`;
+  fb.hidden = false;
+  const dis = fb.querySelector('.disclose');
+  if (dis) dis.addEventListener('click', () => {
+    const open = dis.getAttribute('aria-expanded') !== 'true';
+    dis.setAttribute('aria-expanded', String(open));
+    dis.querySelector('span').textContent = open ? 'ซ่อนวิธีทำ' : 'ดูวิธีทำ';
+    document.getElementById('sol').hidden = !open;
+  });
+  document.getElementById('nextBtn').addEventListener('click', next);
+  const v = document.getElementById('verdict');
+  v.focus({ preventScroll: true });
+  if (window.matchMedia('(max-width: 899px)').matches) fb.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'start' });
+}
+
+function next() {
+  if (!session) return;
+  if (session.idx < session.items.length - 1) { session.idx++; renderQuestion(); }
+  else renderSummary();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (!session || e.metaKey || e.ctrlKey || e.altKey || (zoom && zoom.open)) return;
+  const it = session.items[session.idx];
+  if (!it || !document.getElementById('opts')) return;
+  if (it.chosen == null) {
+    let d = ['1', '2', '3', '4', '5'].indexOf(e.key);
+    if (d < 0) d = LETTERS.indexOf(e.key);
+    if (d >= 0 && d < it.perm.length) { e.preventDefault(); answer(d); }
+  } else if (e.key === 'Enter' && document.activeElement && !document.activeElement.closest('button, a')) {
+    e.preventDefault(); next();
+  }
+});
+
+/* ===== หน้าสรุปผล ===== */
+function renderSummary() {
+  const s = session, items = s.items;
+  const total = items.length;
+  const right = items.filter((i) => i.correct).length;
+  const used = items.reduce((a, i) => a + i.time, 0);
+  const target = items.reduce((a, i) => a + i.q.time, 0);
+  const onTime = items.filter((i) => i.time <= i.q.time).length;
+  const wrong = items.map((it, n) => ({ it, n })).filter((x) => !x.it.correct);
+  const rows = wrong.map(({ it, n }, k) => {
+    const q = it.q, map = q.shuffle ? it.origToDisp : null;
+    return `<div class="witem">
+      <div class="wrow">
+        <span class="wmain"><span class="wid">ข้อ ${n + 1} · ${esc(q.id)}</span>
+          <span class="wans">ตอบ ${dispLetter(it, it.chosen)}. ${esc(q.options[it.chosen])} · ที่ถูก ${dispLetter(it, q.answerIndex)}. ${esc(q.options[q.answerIndex])}</span></span>
+        ${starsHtml(q.stars)}
+        <button type="button" class="wtoggle" aria-expanded="false" aria-controls="wd${k}">ดูวิธีทำ</button>
+      </div>
+      <div class="wdetail" id="wd${k}" hidden>
+        <p class="wq">${esc(q.question)}${q.body.length && !(q.imageSvg || q.imageFile) ? ' ' + esc(q.body.join(' ; ')) : ''}</p>
+        ${q.shortcut ? `<div class="note note-tip"><p class="nl">วิธีลัด</p><p>${esc(remapLetters(q.shortcut, map))}</p></div>` : ''}
+        ${q.solution ? `<div class="note" style="background:var(--surface-2)"><p class="nl">วิธีทำ</p><p>${esc(remapLetters(q.solution, map))}</p></div>` : ''}
+      </div></div>`;
+  }).join('');
+  screen(`<section class="summary" aria-label="สรุปผล">
+    <div class="card score"><p class="muted">คะแนน</p><p class="score-num">${right}<span>/${total}</span></p></div>
+    <div class="stats">
+      <div class="card stat"><p class="muted small">เวลารวม</p><p class="stat-num">${fmtTime(used)}</p><p class="muted small">เป้าหมาย ${fmtTime(target)}</p></div>
+      <div class="card stat"><p class="muted small">ทำทันเวลา</p><p class="stat-num">${onTime} <span>จาก ${total} ข้อ</span></p>
+        <div class="bar" aria-hidden="true"><div class="bar-fill" style="width:${total ? (onTime / total) * 100 : 0}%"></div></div></div>
+    </div>
+    <section class="wlist" aria-labelledby="wlTitle">
+      <h2 id="wlTitle">ข้อที่ผิด (${wrong.length})</h2>
+      ${wrong.length ? `<div class="card witems">${rows}</div>` : `<div class="card empty-state">ถูกทุกข้อ ลองเพิ่มจำนวนข้อหรือเลือกระดับดาวที่ยากขึ้นในชุดถัดไป</div>`}
+    </section>
+    <div class="actions">
+      <button type="button" class="btn" id="againBtn">สุ่มชุดใหม่</button>
+      ${wrong.length ? `<button type="button" class="btn btn-outline" id="retryBtn">ทำเฉพาะข้อที่ผิด (${wrong.length})</button>` : ''}
+      <a class="link-btn" href="./" data-nav>เปลี่ยนหัวข้อ</a>
+    </div></section>`, s.topic);
+  app.querySelectorAll('.wtoggle').forEach((b) => b.addEventListener('click', () => {
+    const open = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', String(open));
+    b.textContent = open ? 'ซ่อนวิธีทำ' : 'ดูวิธีทำ';
+    document.getElementById(b.getAttribute('aria-controls')).hidden = !open;
+  }));
+  const topic = s.topic, star = s.star, count = s.count;
+  document.getElementById('againBtn').addEventListener('click', () => startSession(topic, draw(topic, star, count), star, count));
+  const retry = document.getElementById('retryBtn');
+  if (retry) retry.addEventListener('click', () => startSession(topic, shuffle(wrong.map((x) => x.it.q)), star, count));
+  session = null;
+}
+
+/* ===== หน้าตรวจคลังโจทย์ (เปิดด้วย ?check=1) ===== */
+function renderCheck() {
+  const st = BANK.stats;
+  const rows = Object.keys(TOPICS).map((id) => {
+    const qs = BANK.list.filter((q) => q.topic === id);
+    const by = [1, 2, 3].map((n) => qs.filter((q) => q.stars === n).length);
+    const imgs = qs.filter((q) => q.imageSvg || q.imageFile).length;
+    return `<tr><td>${id} ${esc(TOPICS[id])}</td><td>${qs.length}</td><td>${by[0]} / ${by[1]} / ${by[2]}</td><td>${imgs}</td></tr>`;
+  }).join('');
+  const probs = BANK.problems.map((p) => `<tr><td>${esc(p.where)}</td><td>${esc(p.id)}</td><td>${esc(p.msg)}</td></tr>`).join('');
+  screen(`<div class="check" style="display:flex;flex-direction:column;gap:20px">
+    <a class="link-btn" href="./" data-nav>${ICON.back}กลับหน้าเลือกหัวข้อ</a>
+    <section class="card msg" style="max-width:none"><h1>ตรวจคลังโจทย์</h1>
+      <p>ไฟล์ที่ใช้: <b>${esc(st.source)}</b> (${esc(st.format)}) · อ่านได้ ${BANK.list.length} ข้อ${st.skippedNT ? ' · ข้ามชุดทดสอบท้ายส่วน (NT-) ' + st.skippedNT + ' ข้อ' : ''}</p>
+      <p class="muted small">ที่จำข้อที่ทำแล้ว: ${store.available ? 'ใช้ได้' : 'ใช้ไม่ได้ในเบราว์เซอร์นี้'}</p>
+      <div class="table-scroll"><table><thead><tr><th>หัวข้อ</th><th>จำนวน</th><th>★ / ★★ / ★★★</th><th>มีรูป</th></tr></thead><tbody>${rows}</tbody></table></div>
+    </section>
+    <section class="card msg" style="max-width:none"><h1>ข้อที่ข้ามไป (${BANK.problems.length})</h1>
+      ${BANK.problems.length ? `<div class="table-scroll"><table><thead><tr><th>ตำแหน่ง</th><th>id</th><th>ปัญหา</th></tr></thead><tbody>${probs}</tbody></table></div>` : '<p>ไม่พบปัญหา ทุกข้ออ่านได้ครบ</p>'}
+    </section></div>`, null);
+}
+
+/* ===== เริ่มทำงาน ===== */
+loadBank().then((b) => { BANK = b; route(); }).catch((err) => {
+  const local = location.protocol === 'file:';
+  if (local) {
+    screen(`<section class="card msg"><h1>เปิดจากไฟล์ในเครื่อง</h1>
+      <p>เบราว์เซอร์ไม่ยอมให้หน้าเว็บที่เปิดจากเครื่องอ่านไฟล์โจทย์เอง เมื่ออัปโหลดขึ้น GitHub Pages แล้ว หน้านี้จะไม่ขึ้นอีก</p>
+      <p>ถ้าอยากลองตอนนี้ ให้เลือกไฟล์ <b>bank.json</b></p>
+      <label class="btn" style="margin-top:6px;cursor:pointer">เลือกไฟล์คลังโจทย์<input type="file" id="pickBank" accept=".json,.csv" class="sr-only"></label>
+      <p class="warn" id="pickErr"></p></section>`, null);
+    document.getElementById('pickBank').addEventListener('change', (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      f.text().then((t) => { BANK = bankFromText(t, f.name); route(); })
+        .catch((x) => { document.getElementById('pickErr').textContent = x.message; });
+    });
+    return;
+  }
+  screen(`<section class="card msg"><h1>โหลดคลังโจทย์ไม่สำเร็จ</h1><p>${esc(err.message)}</p>
+    <p class="muted small">ตรวจว่าอัปโหลดไฟล์ bank.json ไว้ที่เดียวกับ index.html แล้ว และชื่อไฟล์สะกดถูกต้อง (ตัวพิมพ์เล็กทั้งหมด)</p></section>`, null);
+});
+})();
+</script>
+</body>
+</html>

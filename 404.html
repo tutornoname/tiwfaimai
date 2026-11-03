@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ติวไฟไหม้</title>
+<script>
+// ลิงก์สั้นจาก QR เช่น /n1 → หน้าโจทย์หัวข้อ N1 (ใช้ได้ทั้งตอนมีและไม่มีโฟลเดอร์ n1–n6)
+(function () {
+  var m = location.pathname.match(/^(.*?)\/n([1-6])\/?$/i);
+  if (m) { location.replace(m[1] + '/?topic=N' + m[2]); return; }
+  var seg = location.pathname.split('/').filter(Boolean);
+  var home = /github\.io$/.test(location.hostname) && seg.length ? '/' + seg[0] + '/' : '/';
+  document.addEventListener('DOMContentLoaded', function () { document.getElementById('home').href = home; });
+})();
+</script>
+</head>
+<body style="font-family:Sarabun,Tahoma,sans-serif;padding:24px;color:#1B2426">
+<p>ไม่พบหน้านี้ · <a id="home" href="/" style="color:#0E6E78">กลับหน้าเลือกหัวข้อ</a></p>
+</body>
+</html>
