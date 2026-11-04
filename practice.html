@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ติวไฟไหม้ · สุ่มทำโจทย์มิติสัมพันธ์</title>
+<meta name="description" content="สุ่มโจทย์ TGAT2 ความสามารถทางมิติสัมพันธ์มาฝึกต่อจากชีทติวไฟไหม้">
+<meta name="theme-color" content="#0E6E78">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230E6E78'/%3E%3Cpath d='M20 40 32 18 44 40Z' fill='none' stroke='white' stroke-width='5' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --bg: #F4F6F6; --surface: #FFFFFF; --surface-2: #F7FAFA;
+  --text: #1B2426; --muted: #55615F; --line: #D5DEDE; --line-soft: #E1E7E7;
+  --accent: #0E6E78; --accent-ink: #0E6E78; --accent-strong: #0A535A; --accent-soft: #E8F3F4; --on-accent: #FFFFFF;
+  --wrong: #A63A1C; --wrong-ink: #8A2F16; --wrong-soft: #FBECE7;
+  --late: #C2551F; --late-ink: #A8471A;
+  --font: 'Sarabun', 'Noto Sans Thai', 'Leelawadee UI', 'Thonburi', Tahoma, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0E1516; --surface: #162022; --surface-2: #1B2729;
+    --text: #E4ECEC; --muted: #A2B3B3; --line: #2E3F41; --line-soft: #243335;
+    --accent: #0E6E78; --accent-ink: #62C3CC; --accent-strong: #138893; --accent-soft: #173539; --on-accent: #FFFFFF;
+    --wrong: #E07D60; --wrong-ink: #F4A189; --wrong-soft: #3A2119;
+    --late: #E8834D; --late-ink: #F29B67;
+    color-scheme: dark;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+  background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+a { color: var(--accent-ink); }
+:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 2px; border-radius: 6px; }
+h1, h2, p, ol { margin: 0; }
+.wrap { width: 100%; max-width: 760px; margin: 0 auto; padding-left: 16px; padding-right: 16px; }
+
+.top { background: var(--surface); border-bottom: 1px solid var(--line-soft); padding-top: env(safe-area-inset-top, 0px); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; }
+.brand { font-size: 21px; font-weight: 700; color: var(--accent-ink); text-decoration: none; }
+.top-sub { font-size: 14px; color: var(--muted); text-align: right; line-height: 1.3; }
+.strip { position: sticky; top: 0; z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line-soft); }
+.strip[hidden] { display: none; }
+.strip .wrap { display: flex; align-items: center; justify-content: space-between; gap: 6px 16px; flex-wrap: wrap; padding-top: 10px; padding-bottom: 10px; font-size: 15px; }
+.qnum { font-weight: 700; }
+.clock { font-variant-numeric: tabular-nums; font-weight: 600; }
+.clock .tg { color: var(--muted); font-weight: 400; }
+.bar { flex: 1 1 100%; height: 6px; border-radius: 3px; background: var(--line-soft); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s linear; }
+.strip.late .bar i { background: var(--late); }
+.strip.late .clock { color: var(--late-ink); }
+main { flex: 1 0 auto; padding-top: 20px; padding-bottom: 40px; }
+.foot { border-top: 1px solid var(--line-soft); padding: 14px 0; text-align: center; font-size: 13px; color: var(--muted); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+.muted { color: var(--muted); }
+.btn {
+  display: flex; align-items: center; justify-content: center; width: 100%; min-height: 54px; padding: 0 20px;
+  border-radius: 14px; border: 2px solid var(--accent); background: var(--accent); color: var(--on-accent);
+  font-size: 19px; font-weight: 700; text-decoration: none;
+}
+.btn:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+.btn-outline { background: var(--surface); color: var(--accent-ink); }
+.btn-outline:hover { background: var(--accent-soft); border-color: var(--accent); }
+
+/* เลือกหัวข้อ */
+.intro { display: flex; flex-direction: column; gap: 4px; margin-bottom: 18px; }
+.intro h1 { font-size: 26px; line-height: 1.3; }
+.topics { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+@media (min-width: 620px) { .topics { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.topic { display: flex; align-items: center; gap: 14px; padding: 14px 16px; text-decoration: none; color: var(--text); }
+.topic:hover { border-color: var(--accent); }
+.topic .n { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-ink);
+  display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 19px; }
+.topic .t { font-size: 17px; font-weight: 600; line-height: 1.35; }
+
+/* เริ่มรอบ */
+.setup { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+.setup h1 { font-size: 25px; line-height: 1.3; }
+.seg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.seg button { min-height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-size: 16px; font-weight: 600; }
+.seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.lbl { font-weight: 600; margin-bottom: 8px; }
+.facts { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 15px; color: var(--muted); }
+
+/* โจทย์ */
+.qcard { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.qhead { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--muted); }
+.chip { display: inline-block; padding: 0 9px; border-radius: 999px; border: 1px solid var(--line); font-weight: 600; color: var(--text); }
+.qtext { font-size: 19px; font-weight: 500; line-height: 1.55; }
+.fig { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px; display: flex; justify-content: center; }
+.fig svg { display: block; width: 100%; height: auto; max-height: 300px; }
+.fig.narrow svg { max-width: 230px; }
+.opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.opts.text { grid-template-columns: minmax(0, 1fr); }
+.opt {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 6px 8px;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--surface); text-align: center;
+}
+.opt .pic { width: 100%; background: #fff; border-radius: 8px; }
+.opt .pic svg { display: block; width: 100%; height: auto; }
+.opt .ol { font-weight: 700; font-size: 17px; }
+.opts.text .opt { flex-direction: row; justify-content: flex-start; gap: 14px; min-height: 56px; padding: 10px 18px; font-size: 19px; font-weight: 600; }
+.opt:hover:not([disabled]) { border-color: var(--accent); background: var(--accent-soft); }
+.opt[disabled] { cursor: default; }
+.opt.dim { opacity: .55; }
+.opt.right { border: 2px solid var(--accent); background: var(--accent-soft); opacity: 1; }
+.opt.right .ol { color: var(--accent-ink); }
+.opt.wrong { border: 2px solid var(--wrong); background: var(--wrong-soft); opacity: 1; }
+.opt.wrong .ol { color: var(--wrong-ink); }
+.opt .mk { position: absolute; top: 4px; right: 6px; font-size: 15px; font-weight: 700; }
+.opt.right .mk { color: var(--accent-ink); } .opt.wrong .mk { color: var(--wrong-ink); }
+
+.fb { margin-top: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.fb[hidden] { display: none; }
+.verdict { font-size: 21px; font-weight: 700; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.verdict:focus { outline: none; }
+.verdict.ok { color: var(--accent-ink); } .verdict.no { color: var(--wrong-ink); }
+.verdict small { font-size: 15px; font-weight: 500; color: var(--muted); }
+.verdict small.late { color: var(--late-ink); }
+.why { padding: 10px 14px; border-radius: 10px; background: var(--wrong-soft); color: var(--text); font-size: 16px; }
+.why b { color: var(--wrong-ink); }
+.sec h2 { font-size: 16px; margin-bottom: 4px; }
+.sec ol { padding-left: 22px; font-size: 16px; }
+.sec ol li + li { margin-top: 2px; }
+.tip { padding: 10px 14px; border-left: 4px solid var(--accent); background: var(--accent-soft); border-radius: 0 10px 10px 0; font-size: 16px; }
+.tip b { color: var(--accent-ink); }
+.nextrow { margin-top: 14px; }
+
+/* สรุป */
+.sum { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.score { display: flex; align-items: baseline; gap: 10px; }
+.score b { font-size: 56px; line-height: 1; color: var(--accent-ink); }
+.score span { font-size: 20px; color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.stat { padding: 10px 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line-soft); }
+.stat .k { font-size: 13px; color: var(--muted); } .stat .v { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.rows { display: flex; flex-direction: column; border-top: 1px solid var(--line-soft); }
+.row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line-soft); font-size: 15px; }
+.row .r { width: 26px; font-weight: 700; } .row .r.ok { color: var(--accent-ink); } .row .r.no { color: var(--wrong-ink); }
+.row .s { flex: 1 1 auto; min-width: 0; } .row .tm { font-variant-numeric: tabular-nums; color: var(--muted); }
+.row .tm.late { color: var(--late-ink); }
+.btns { display: flex; flex-direction: column; gap: 10px; }
+.msg { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+@media (min-width: 620px) {
+  main { padding-top: 32px; }
+  .opts:not(.text) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .qcard, .fb { padding: 22px; } .qtext { font-size: 21px; }
+}
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="?" id="home">ติวไฟไหม้</a>
+  <span class="top-sub" id="topSub">TGAT2 มิติสัมพันธ์<br>สุ่มทำโจทย์เพิ่ม</span>
+</div></header>
+<div class="strip" id="strip" hidden></div>
+<main class="wrap" id="app" aria-live="polite"><p class="muted">กำลังโหลด…</p></main>
+<footer class="foot">© ติวไฟไหม้ · โจทย์ฝึกเพิ่มเติมจากชีท ส่วนที่ 1 ความสามารถทางมิติสัมพันธ์</footer>
+
+<script>
+'use strict';
+const TOPICS = {
+  1: 'การหมุนภาพ 2 มิติ',
+  2: 'ภาพสะท้อน (ในกระจก / ในน้ำ)',
+  3: 'รูปคลี่ลูกบาศก์ (ลูกบาศก์ที่ประกอบได้ / หน้าตรงข้าม)',
+  4: 'นับลูกบาศก์จากภาพไอโซเมตริก',
+  5: 'ภาพมุมมอง (ด้านหน้า ด้านบน ด้านข้าง)',
+  6: 'พับกระดาษแล้วเจาะรู',
+  7: 'อนุกรมภาพ / ภาพที่ไม่เข้าพวก'
+};
+const L = ['ก', 'ข', 'ค', 'ง', 'จ'];
+const ROUND = 10;
+const LEVELS = ['ทุกระดับ', 'ง่าย', 'กลาง', 'ยาก'];
+const app = document.getElementById('app');
+const strip = document.getElementById('strip');
+const cache = {};                       // คลังที่โหลดแล้ว (อยู่ในหน่วยความจำเท่านั้น)
+const used = {};                        // ข้อที่สุ่มไปแล้วในการเปิดหน้านี้ครั้งนี้
+let S = null, tick = null, level = 'ทุกระดับ';
+
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = (sec) => { sec = Math.max(0, Math.round(sec)); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); };
+const isSvg = (s) => typeof s === 'string' && /^\s*<svg[\s>]/i.test(s);
+// รับเฉพาะ SVG ที่ไม่มีสคริปต์ (กันไฟล์คลังที่ถูกแก้ผิด)
+const safeSvg = (s) => (isSvg(s) && !/<script|on\w+\s*=|javascript:/i.test(s)) ? s : '';
+
+function topicFromUrl() {
+  const n = parseInt(new URLSearchParams(location.search).get('topic'), 10);
+  return TOPICS[n] ? n : null;
+}
+
+async function loadTopic(n) {
+  if (cache[n]) return cache[n];
+  let data = null;
+  if (window.EMBED_BANK && window.EMBED_BANK[n]) data = window.EMBED_BANK[n];
+  else {
+    const res = await fetch('bank/topic' + n + '.json', { cache: 'no-cache' });
+    if (!res.ok) throw new Error('ไม่พบไฟล์ bank/topic' + n + '.json (รหัส ' + res.status + ')');
+    data = await res.json();
+  }
+  const list = (Array.isArray(data) ? data : data['ข้อ'] || []).filter((q) =>
+    q && Array.isArray(q['ตัวเลือก']) && q['ตัวเลือก'].length === 5 && q['คำตอบ'] >= 0 && q['คำตอบ'] <= 4);
+  if (!list.length) throw new Error('ไฟล์คลังหัวข้อ ' + n + ' ไม่มีโจทย์ที่ใช้ได้');
+  cache[n] = list;
+  return list;
+}
+
+function stop() { if (tick) { clearInterval(tick); tick = null; } }
+function screen(html) { stop(); strip.hidden = true; app.innerHTML = html; window.scrollTo(0, 0); }
+
+/* ---------- หน้าเลือกหัวข้อ ---------- */
+function renderPicker() {
+  document.title = 'ติวไฟไหม้ · สุ่มทำโจทย์มิติสัมพันธ์';
+  screen(`<div class="intro"><h1>เลือกหัวข้อที่จะฝึก</h1>
+      <p class="muted">สุ่มรอบละ ${ROUND} ข้อ ตอบแล้วเห็นวิธีคิดทันที ไม่ต้องสมัครสมาชิก</p></div>
+    <nav class="topics" aria-label="หัวข้อ">${Object.keys(TOPICS).map((n) =>
+      `<a class="card topic" href="?topic=${n}"><span class="n">${n}</span><span class="t">${esc(TOPICS[n])}</span></a>`).join('')}</nav>`);
+}
+
+/* ---------- หน้าเริ่มรอบ ---------- */
+async function renderSetup(n) {
+  document.title = 'ติวไฟไหม้ · หัวข้อ ' + n;
+  screen('<p class="muted">กำลังโหลดโจทย์หัวข้อ ' + n + '…</p>');
+  let list;
+  try { list = await loadTopic(n); }
+  catch (e) { return renderError(n, e); }
+  const cnt = (lv) => lv === 'ทุกระดับ' ? list.length : list.filter((q) => q['ระดับ'] === lv).length;
+  screen(`<section class="card setup">
+      <div><p class="muted">หัวข้อ ${n}</p><h1>${esc(TOPICS[n])}</h1></div>
+      <div class="facts"><span>คลังมี ${list.length} ข้อ</span><span>สุ่มรอบละ ${ROUND} ข้อ ไม่ซ้ำในรอบ</span><span>จับเวลาเทียบเวลาเป้าหมาย</span></div>
+      <div><p class="lbl" id="lvLbl">ระดับ</p>
+        <div class="seg" role="group" aria-labelledby="lvLbl">${LEVELS.map((lv) =>
+          `<button type="button" data-lv="${lv}" aria-pressed="${lv === level}">${lv}</button>`).join('')}</div>
+        <p class="muted" id="lvInfo" style="font-size:14px;margin-top:6px"></p></div>
+      <button type="button" class="btn" id="go">เริ่มทำ ${ROUND} ข้อ</button>
+      <a class="muted" href="?" style="font-size:15px">เลือกหัวข้ออื่น</a>
+    </section>`);
+  const info = () => { document.getElementById('lvInfo').textContent = 'มีโจทย์ระดับนี้ ' + cnt(level) + ' ข้อ'; };
+  info();
+  app.querySelectorAll('[data-lv]').forEach((b) => b.addEventListener('click', () => {
+    level = b.dataset.lv;
+    app.querySelectorAll('[data-lv]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    info();
+  }));
+  document.getElementById('go').addEventListener('click', () => startRound(n));
+}
+
+function renderError(n, e) {
+  const local = location.protocol === 'file:';
+  screen(`<section class="card msg"><h1 style="font-size:22px">โหลดโจทย์ไม่สำเร็จ</h1>
+    <p>${esc(e.message)}</p>
+    ${local ? '<p class="muted">หน้านี้ถูกเปิดจากไฟล์ในเครื่อง เบราว์เซอร์จึงไม่ยอมให้อ่านโฟลเดอร์ bank/ ให้ทดสอบหลังอัปโหลดขึ้น GitHub Pages แล้ว</p>'
+           : '<p class="muted">ตรวจว่ามีโฟลเดอร์ bank อยู่ข้าง practice.html และมีไฟล์ topic' + n + '.json อยู่ข้างใน แล้วรอ 1–2 นาทีหลังอัปโหลด</p>'}
+    <button type="button" class="btn" onclick="location.reload()">ลองอีกครั้ง</button></section>`);
+}
+
+/* ---------- สุ่ม ---------- */
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function draw(n) {
+  const pool = cache[n].filter((q) => level === 'ทุกระดับ' || q['ระดับ'] === level);
+  const key = n + '|' + level;
+  used[key] = used[key] || new Set();
+  let fresh = pool.filter((q) => !used[key].has(q.id));
+  if (fresh.length < Math.min(ROUND, pool.length)) { used[key].clear(); fresh = pool.slice(); }  // ทำครบคลังแล้ว เริ่มวนใหม่
+  const pick = shuffle(fresh).slice(0, ROUND);
+  pick.forEach((q) => used[key].add(q.id));
+  // เรียงง่าย → ยากภายในรอบ
+  const rank = { 'ง่าย': 0, 'กลาง': 1, 'ยาก': 2 };
+  return pick.sort((a, b) => (rank[a['ระดับ']] ?? 1) - (rank[b['ระดับ']] ?? 1));
+}
+
+function startRound(n) {
+  S = { n, qs: draw(n), i: 0, res: [] };
+  renderQ();
+}
+
+/* ---------- โจทย์ ---------- */
+function renderQ() {
+  const q = S.qs[S.i];
+  const text = q['ชนิดตัวเลือก'] !== 'svg';
+  const fig = q['รูปโจทย์'] ? safeSvg(q['รูปโจทย์']) : '';
+  const narrow = fig && /viewBox="0 0 (\d+(?:\.\d+)?) /.test(fig) && parseFloat(RegExp.$1) <= 160;
+  screen(`<section class="card qcard">
+      <div class="qhead"><span>${esc(q['ประเภท'] || TOPICS[S.n])}</span><span class="chip">${esc(q['ระดับ'] || '')}</span></div>
+      <p class="qtext" id="qt">${esc(q['โจทย์'])}</p>
+      ${fig ? `<div class="fig${narrow ? ' narrow' : ''}" role="img" aria-label="รูปโจทย์">${fig}</div>` : ''}
+    </section>
+    <div class="opts${text ? ' text' : ''}" id="opts" role="group" aria-label="ตัวเลือก">${q['ตัวเลือก'].map((o, i) =>
+      `<button type="button" class="opt" data-i="${i}" aria-label="ตัวเลือก ${L[i]}">${text
+        ? `<span class="ol">${L[i]}</span><span>${esc(o)}</span>`
+        : `<span class="pic">${safeSvg(o)}</span><span class="ol">${L[i]}</span>`}<span class="mk" aria-hidden="true"></span></button>`).join('')}</div>
+    <section class="card fb" id="fb" hidden></section>
+    <div class="nextrow" id="nx"></div>`);
+  const target = q['เวลาเป้าหมาย_วินาที'] || 45;
+  strip.hidden = false;
+  strip.innerHTML = `<div class="wrap"><span class="qnum">ข้อ ${S.i + 1} / ${S.qs.length}</span>
+    <span class="clock"><span id="now">0:00</span> <span class="tg">/ เป้า ${fmt(target)}</span></span>
+    <div class="bar" aria-hidden="true"><i id="barI"></i></div></div>`;
+  S.t0 = performance.now();
+  const upd = () => {
+    const s = (performance.now() - S.t0) / 1000;
+    document.getElementById('now').textContent = fmt(s);
+    document.getElementById('barI').style.width = Math.min(100, s / target * 100) + '%';
+    strip.classList.toggle('late', s > target);
+  };
+  upd(); tick = setInterval(upd, 250);
+  app.querySelectorAll('.opt').forEach((b) => b.addEventListener('click', () => answer(+b.dataset.i)));
+}
+
+function answer(k) {
+  if (S.done) return;
+  stop();
+  const q = S.qs[S.i];
+  const sec = (performance.now() - S.t0) / 1000;
+  const target = q['เวลาเป้าหมาย_วินาที'] || 45;
+  const ans = q['คำตอบ'];
+  const ok = k === ans;
+  S.res.push({ q, k, ok, sec });
+  app.querySelectorAll('.opt').forEach((b) => {
+    const i = +b.dataset.i;
+    b.disabled = true;
+    if (i === ans) { b.classList.add('right'); b.querySelector('.mk').textContent = '✓'; }
+    else if (i === k) { b.classList.add('wrong'); b.querySelector('.mk').textContent = '✗'; }
+    else b.classList.add('dim');
+  });
+  const reason = !ok && q['ตัวลวง'] ? q['ตัวลวง'][k] : null;
+  const steps = Array.isArray(q['วิธีคิด']) ? q['วิธีคิด'] : String(q['วิธีคิด'] || '').split('\n');
+  const late = sec > target;
+  const fb = document.getElementById('fb');
+  fb.hidden = false;
+  fb.innerHTML = `<h2 class="verdict ${ok ? 'ok' : 'no'}" id="vd" tabindex="-1">${ok ? 'ถูกต้อง' : 'ยังไม่ถูก · คำตอบคือ ' + L[ans]}
+      <small class="${late ? 'late' : ''}">ใช้ ${fmt(sec)} / เป้า ${fmt(target)}${late ? ' · เกินเวลา' : ''}</small></h2>
+    ${reason ? `<p class="why"><b>${L[k]} ผิดเพราะ</b> ${esc(reason)}</p>` : ''}
+    <div class="sec"><h2>วิธีคิด</h2><ol>${steps.filter(Boolean).map((s) => '<li>' + esc(s) + '</li>').join('')}</ol></div>
+    ${q['วิธีลัด'] ? `<p class="tip"><b>วิธีลัด</b> ${esc(q['วิธีลัด'])}</p>` : ''}`;
+  const last = S.i === S.qs.length - 1;
+  document.getElementById('nx').innerHTML = `<button type="button" class="btn" id="next">${last ? 'ดูสรุปผล' : 'ข้อถัดไป'}</button>`;
+  document.getElementById('next').addEventListener('click', () => { if (last) renderSummary(); else { S.i++; renderQ(); } });
+  document.getElementById('vd').focus({ preventScroll: true });
+  fb.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+}
+
+/* ---------- สรุปรอบ ---------- */
+function renderSummary() {
+  const r = S.res, right = r.filter((x) => x.ok).length;
+  const total = r.reduce((a, x) => a + x.sec, 0);
+  const tgt = r.reduce((a, x) => a + (x.q['เวลาเป้าหมาย_วินาที'] || 45), 0);
+  const inTime = r.filter((x) => x.sec <= (x.q['เวลาเป้าหมาย_วินาที'] || 45)).length;
+  screen(`<section class="card sum" aria-label="สรุปผล">
+      <p class="muted">หัวข้อ ${S.n} · ${esc(TOPICS[S.n])}</p>
+      <div class="score"><b>${right}</b><span>/ ${r.length} ข้อ</span></div>
+      <div class="stats">
+        <div class="stat"><div class="k">เวลารวม</div><div class="v">${fmt(total)}</div></div>
+        <div class="stat"><div class="k">เวลาเป้าหมายรวม</div><div class="v">${fmt(tgt)}</div></div>
+        <div class="stat"><div class="k">เฉลี่ยต่อข้อ</div><div class="v">${Math.round(total / r.length)} วิ</div></div>
+        <div class="stat"><div class="k">ทันเวลาเป้า</div><div class="v">${inTime} / ${r.length}</div></div>
+      </div>
+      <div class="rows">${r.map((x, i) => `<div class="row"><span class="r ${x.ok ? 'ok' : 'no'}">${x.ok ? '✓' : '✗'}</span>
+        <span class="s">${i + 1}. ${esc(x.q['ประเภท'] || '')} <span class="muted">· ${esc(x.q['ระดับ'] || '')}</span>${x.ok ? '' : ` <span class="muted">· ตอบ ${L[x.k]} เฉลย ${L[x.q['คำตอบ']]}</span>`}</span>
+        <span class="tm ${x.sec > (x.q['เวลาเป้าหมาย_วินาที'] || 45) ? 'late' : ''}">${fmt(x.sec)}</span></div>`).join('')}</div>
+      <div class="btns"><button type="button" class="btn" id="again">สุ่มอีก ${ROUND} ข้อ</button>
+        <a class="btn btn-outline" href="?">เลือกหัวข้ออื่น</a></div>
+    </section>`);
+  document.getElementById('again').addEventListener('click', () => startRound(S.n));
+}
+
+document.addEventListener('keydown', (e) => {
+  if (!S || S.done) return;
+  const i = '12345'.indexOf(e.key);
+  if (i >= 0 && document.querySelector('.opt:not([disabled])')) answer(i);
+});
+
+function route() {
+  const n = topicFromUrl();
+  if (n) {
+    document.getElementById('topSub').innerHTML = 'หัวข้อ ' + n + '<br>สุ่มทำโจทย์เพิ่ม';
+    renderSetup(n);
+  } else renderPicker();
+}
+route();
+</script>
+</body>
+</html>
