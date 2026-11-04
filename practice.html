@@ -203,8 +203,13 @@ async function loadTopic(n) {
   let data = null;
   if (window.EMBED_BANK && window.EMBED_BANK[n]) data = window.EMBED_BANK[n];
   else {
-    const res = await fetch('bank/topic' + n + '.json', { cache: 'no-cache' });
-    if (!res.ok) throw new Error('ไม่พบไฟล์ bank/topic' + n + '.json (รหัส ' + res.status + ')');
+    // หาไฟล์ในโฟลเดอร์ bank/ ก่อน ถ้าไม่มีให้หาข้าง practice.html
+    let res = null;
+    for (const path of ['bank/topic' + n + '.json', 'topic' + n + '.json']) {
+      try { res = await fetch(path, { cache: 'no-cache' }); } catch (e) { res = null; }
+      if (res && res.ok) break;
+    }
+    if (!res || !res.ok) throw new Error('ไม่พบไฟล์ topic' + n + '.json (ต้องอยู่ในโฟลเดอร์ bank หรือข้าง practice.html)');
     data = await res.json();
   }
   const list = (Array.isArray(data) ? data : data['ข้อ'] || []).filter((q) =>
